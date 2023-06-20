@@ -1,14 +1,17 @@
 import "./styles.css";
 import Output from "./components/Output";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined , LoadingOutlined } from "@ant-design/icons";
 import { Button, Modal } from "antd";
 import React, { useState, useRef } from "react";
 import JoditEditor from "jodit-react";
 import { addNotes } from "../src/app/features/noteSlice";
 import { useDispatch } from "react-redux";
-export default function App(props) {
 
-  const dipatch = useDispatch();
+
+
+export default function App() {
+  const dispatch = useDispatch();
+  const [isLoading,setLoading] = useState(false) 
   const [open, setOpen] = useState(false);
   const editor = useRef(null);
 
@@ -16,16 +19,23 @@ export default function App(props) {
   const [content, setContent] = useState("");
 
   function submitNote(event) {
+
     event.preventDefault();
-    const dataSet = {
-      title: title,
-      content: content,
-      id:Math.floor(Math.random()*8999999+1000000)
-    };
-    dipatch(addNotes(dataSet));
-    setOpen(false);
-    setTitle("")
-    setContent("")
+      setLoading(true)
+
+    setTimeout(() => {
+      const dataSet = {
+        title: title,
+        content: content,
+        id: Math.floor(Math.random() * 8999999 + 1000000)
+      };
+          
+      dispatch(addNotes(dataSet));
+      setOpen(false);
+      setTitle("");
+      setContent("");
+      setLoading(false);      // Set loading to false after dispatching
+    }, 500)
   }
 
   return (
@@ -60,8 +70,9 @@ export default function App(props) {
       >
         <form>
           <h4>Enter Title</h4>
-          <input placeholder="Enter Title"
+          <input placeholder="Enter Title" 
             type="text"
+            required
             style={{
               width: "95%",
               padding: "1rem",
@@ -76,20 +87,24 @@ export default function App(props) {
           />
           <h1>Enter Note!</h1>
           <JoditEditor
-          
+              required
             ref={editor}
             value={content}
             tabIndex={1} // tabIndex of textarea
             onBlur={(newContent) => setContent(newContent)}
           />
-
-          <Button
-            type="primary"
-            style={{ marginTop: "1rem" }}
-            onClick={submitNote}
-          >
-            Add
-          </Button>
+              <div className="cb" style={{display:'flex'}}>
+              <Button
+              type="primary" htmlType= "submit"
+              style={{ marginTop: "1rem" }}
+              onClick={submitNote}
+            >
+              Add
+            </Button>
+            <h2 style={{paddingLeft:'3rem'}}>{isLoading ? <LoadingOutlined />:" "}</h2>
+            </div>
+         
+         
         </form>
       </Modal>
       <Output/>
