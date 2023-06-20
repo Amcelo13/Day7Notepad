@@ -62,6 +62,7 @@ function Output() {
   };
   const handlesave = (data) => {
     dispatch(update(data));
+    setOpen(false); 
   };
 
   return (
